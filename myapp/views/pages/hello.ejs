@@ -1,0 +1,42 @@
+<html>
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ethjs@0.3.0/dist/ethjs.min.js"></script>
+</head>
+<body>
+    <button id="change">change</button>
+    <script>
+        var $result = $('#result');
+        $('#change').click(function () {
+            console.log('changed')
+            var provider;
+            if (window.web3.currentProvider) {
+                provider = window.web3.currentProvider;
+            } else {
+                provider = new web3.providers.HttpProvider("http://loalhost:8545");
+            }
+            var web3 = new Web3(provider);
+            web3.eth.sign("your public key", "challange string", function (err, result) {
+                if (err) {
+                    console.log('errr', err)
+                }
+                if (result) {
+                    console.log('result', result)
+                    $.ajax({
+                        url: 'http://localhost:3000/works',
+                        type: 'POST',
+                        dataType: 'json',
+                        data: {"owner":"your public key","sig":result,"data":"challange string"},
+                        success: function (data, textStatus, xhr) {
+                            console.log(data);// if it is sucessfull you will get a jwt token which you can pass in your website
+                        },
+                        error: function (xhr, textStatus, errorThrown) {
+                            console.log('Error in Operation');
+                        }
+                    });
+                }
+            })
+        });
+    </script>
+</body>
+</html>
